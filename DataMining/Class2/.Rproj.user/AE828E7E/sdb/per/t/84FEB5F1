@@ -1,0 +1,21 @@
+{
+    "collab_server" : "",
+    "contents" : "# ctrl+L to clear console\na <- c( 1, 2, 3 )   # c() means combine\na\nx <- 1\nrm( x ) # remove x from kernel\nx       # error x is not in kernel\n\n\nmean(x = c( 1, 2, 3, 4) )\nx                            # error x is not in kernel\n\nmean(x <- c( 1, 2, 3, 4) )   # creates an object x\nx                            # x is in kernel\n\n\n\ndf <- mtcars[,c(1:3, 7)]\nView(df)\nnames( df )\n\nvec = c( \"mpg\", \"hp\", \"cyl\" )\nnew_df <- mtcars[ vec ]\nnew_df\n\n\nmin( mtcars$mpg )        # returns minimum value from the column mpg\nwhich.min( mtcars$mpg )  # returns the number of the row of the column mpg\n\n\nmax( mtcars$hp )        # returns minimum value from the column mpg\nwhich.max( mtcars$hp )  # returns the number of the row of the column mpg\n\nrow <- which.max( mtcars$wt )\nrow\nrownames( mtcars )[row]\n\n\n\nrownames( mtcars )[ which.max( mtcars$wt ) ]\n\n\n\nblya <- c( 1:25, 77 )\nblya\nmean( blya )\nmedian( blya )\nsd( blya )\n\n\na <- range( blya )     # min and max of blya\nb = a[2] - a[1]        # get difference of min and max\nb\n\n\nsummary( mtcars )      # min, max, 1st quartile, 3rd quartile...\n\n\n\n\ndata <- read.csv( 'Census R.csv' )\nView( data )\n\ndata$sex <- factor( data$sex, levels = c( 1, 2 ), labels = c( 'Male', 'Female' ) )\ndata$happy <- ordered( data$happy, \n                       levels = c( 1, 2, 3 ), \n                       labels = c( 'Very happy', 'Pretty happy', 'Not too happy' ), \n                       exclude = c( 8, 9 ) )\ndata$age[ data$age == 99 ] <- NA    # put NA for all cells that have value 99\ndata$age[ data$age == 98 ] <- NA    # put NA for all cells that have value 98\nmean( data$age, na.rm = TRUE )      # get mean of age exclude NAs\nsd( data$age, na.rm = TRUE )        # get standart deviation exclude NAs\nmedian( data$age, na.rm = TRUE )    # get median exclude NAs\n\nnew_data <- data[data$age > 34 || data$age < 19, ]\naggregate( data$age, \n           by = list( data$sex ), \n           FUN = 'mean', \n           na.rm = TRUE )\naggregate( data[, c( 'age', 'sibs') ], \n           by = list( data$sex, data$happy ), \n           FUN = 'mean', \n           na.rm = TRUE )\n\ntable( data$sex, data$happy )\nblah <- table( data$sex, data$happy )\nprop.table( blah )\nprop.table( blah, 1 )\n\n\nsummary( new_data$age )\nsummary( data$age )\n\nView( new_data )\nView( data )\n",
+    "created" : 1472804997564.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "844325508",
+    "id" : "84FEB5F1",
+    "lastKnownWriteTime" : 1473067511,
+    "last_content_update" : -2147483648,
+    "path" : "C:/Users/ADStudent/Desktop/Martin/Class2/script.R",
+    "project_path" : "script.R",
+    "properties" : {
+        "tempName" : "Untitled1"
+    },
+    "relative_order" : 1,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

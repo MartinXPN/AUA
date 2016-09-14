@@ -1,0 +1,21 @@
+{
+    "collab_server" : "",
+    "contents" : "# Suppose relationship between 2 variables (x, y) is linear\n# y = bx + a\n\n# correlation -> positive (b>0) / negative (b<0)\n# correlation != causation\n\nload( 'College.rda' )\nstr(College)\n\nrownames( College ) <- College$University\nCollege$University <- NULL\nView( College )\n\ncor( College$Accept, College$Apps )\n?cor\n\nplot( College$Apps, College$Accept )\npairs( ~Apps + Accept + Enroll, data = College)\ncor( College[,c( \"Apps\", \"Accept\", \"Enroll\" ) ] )\nprint( cor( College[,-1] ), digits = 2 )\n\nplot( College[,-1] )\n",
+    "created" : 1473669305241.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "1148281796",
+    "id" : "EFA5A9FE",
+    "lastKnownWriteTime" : 1473671826,
+    "last_content_update" : -2147483648,
+    "path" : "C:/Users/ADStudent/Desktop/Martin/Class4/script.R",
+    "project_path" : "script.R",
+    "properties" : {
+        "tempName" : "Untitled1"
+    },
+    "relative_order" : 1,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

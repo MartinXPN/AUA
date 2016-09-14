@@ -1,0 +1,21 @@
+{
+    "collab_server" : "",
+    "contents" : "data <- read.csv( 'Census R.csv' )\n\ndata$sex <- factor( data$sex, \n                    levels = c( 1, 2 ), \n                    labels = c( 'Male', 'Female' ) )\n\nbarplot( table( data$sex ), \n         ylab = \"Number\", \n         main = \"Title\", \n         xlab = \"X axes\",\n         legend.text = c( 'Male', 'Female' ) )\n\n?barplot\n\nstr( mtcars )\n\nView( mtcars )\n\nplot( mtcars$mpg, \n      mtcars$hp,\n      xlab = \"Miles per galon\",\n      ylab = \"Horse power\" )\n\n\nhist( data$age, main = \"Title\", xlab = \"Age\" )\n\n\ninstall.packages(\"magrittr\")\nlibrary(magrittr)\n\n\nrm( diamonds )\nView( diamonds )\n\nd <- diamonds\nView( d )\n\nset.seed( 1997 )\nsampled <- diamonds[ sample( nrow(diamonds), 400 ), ]\nView( sampled )\n\nqplot( log(carat), log(price), data=sampled, colour=clarity )\nqplot( log(carat), log(price), data=sampled, shape=cut, colour=clarity )\nqplot( log(carat), log(price), data=sampled, shape=clarity, colour=clarity )\n\n\nqplot( color, price/carat, data=diamonds, colour=color, geom = 'jitter' )\nqplot( color, data=diamonds, geom = 'bar' )\n\nqplot( carat, data=diamonds, geom = 'histogram', binwidth = 0.1, xlim = c(0, 4) )\nqplot( carat, data=diamonds, geom = 'density' )\nqplot( carat, data=diamonds, fill=color, binwidth=0.1 )\nqplot( carat, data=diamonds, geom = 'histogram', facets = color~. , xlim = c(0,4) )\n\nstr( College )\nsummary( College )\n",
+    "created" : 1473237226545.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "1633523612",
+    "id" : "A99C6E22",
+    "lastKnownWriteTime" : 1473412675,
+    "last_content_update" : 1473412675,
+    "path" : "C:/Users/ADStudent/Desktop/Martin/Class3/script.R",
+    "project_path" : "script.R",
+    "properties" : {
+        "tempName" : "Untitled1"
+    },
+    "relative_order" : 1,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}
