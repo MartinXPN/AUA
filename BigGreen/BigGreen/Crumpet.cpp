@@ -16,7 +16,7 @@ double Crumpet::calculatePrice()
 
 double Crumpet::calculateSalePrice()
 {
-	double price = calculatePrice();
-	double price20 = price + (price * 0.2);
-	return price20 - (price20 * 0.1);
+	double price = calculatePrice();		/// get current price
+	double price20 = price + (price * 0.2);	/// get + 20% of the price
+	return price20 - (price20 * 0.1);		/// get - 10% of the price
 }

@@ -5,7 +5,7 @@ Flubber::Flubber(std::string name, int distance) : Doodads( name )
 {
 	this->distance = distance;
 	if (distance >= MIN_DISTANCE)
-		minAge = -1;
+		minAge = -1;				/// no age restriction
 }
 
 Flubber::Flubber(std::string name, int distance, int minAge) : Doodads( name, minAge )

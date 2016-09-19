@@ -26,7 +26,7 @@ void Doodads::setMinAge(int minAge)
 	this->minAge = minAge;
 }
 
-double Doodads::calculatePrice()
+double Doodads::calculatePrice() /// ( |minAge| * ageFactor * 2^len(name) )%100
 {
 	return double( ( abs(minAge) * ageFactor * static_cast <int>(std::pow( 2, name.length() ) ) ) % 100 );
 }
