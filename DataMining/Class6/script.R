@@ -41,5 +41,43 @@ qplot( blood$Age, blood$Pressure )
 model <- lm( Pressure~Age, data = blood )
 summary( model )
 # => Pressure = 0.97*Age + 98.7
+qplot( blood$Age, blood$Pressure ) + geom_abline( slope = 0.97, intercept = 98.7 )
 
 
+
+# create new dataset without outliers
+blood <- blood[ -c( which.max(blood$Pressure) ), ]
+model <- lm( Pressure~Age, data = blood )
+summary( model )
+# => Pressure = 0.9493*Age + 97.0771
+qplot( blood$Age, blood$Pressure ) + geom_abline( slope = 0.9493, intercept = 97.0771 )
+names( model )
+dist <- data.frame( model$residuals )
+colnames( dist ) <- c( 'val' )
+
+outliers <- data.frame( dist[ (abs(dist$val) > 10), ] )
+colnames( outliers ) <- c( 'val' )
+
+a <- model[ ( abs(dist$val) < 10),]
+
+model$residuals
+qplot( model$residuals )
+View( outliers )
+
+
+abalone <- read.csv( 'Abalone.csv' )
+View( abalone )
+
+boxplot(rings~sex, data=abalone )          # we can see that there is no big difference between M and F
+abalone$sex <- as.character( abalone$sex ) # thats why we decide to merge them and call NI (not infant)
+abalone$sex
+
+abalone$sex [ abalone$sex != 'I' ] <- 'NI' # subset M and F with NI
+abalone$sex                                # see result
+boxplot(rings~sex, data=abalone )
+
+
+abalone$sex <- as.factor( abalone$sex )    # make sex a factor variable
+abalone$sex                                # see results
+
+cor( abalone[,-c(1)] )  # correlation between every element in abalone except the sex (as it is not numeric)
