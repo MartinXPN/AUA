@@ -35,9 +35,9 @@ subTest <- test[ -setToBeRemoved ]       # construct a new set for testing that 
 lm( rings~. , data = subTrain )
 lm( rings~. , data = subTest )
 
-Model1 <- lm( rings ~ sex + height + weight.w, data = train )
-Model2 <- lm( rings ~ height + weight.w, data = train )
-Model3 <- lm( rings ~ sex + weight.w, data = train )
+Model1 <- lm( rings ~ sex + height + weight.w, data = train ) # linear model that takes into account sex, height, weight.w
+Model2 <- lm( rings ~ height + weight.w, data = train )       # linear model that takes into account height, weight.w
+Model3 <- lm( rings ~ sex + weight.w, data = train )          # linear model that takes into account sex, weight.w
 Model
 
 
@@ -45,5 +45,62 @@ library( memisc )
 mtable( Model1, Model2, Model3 ) # compare models
 
 
-baseline <- sqrt( mean( ( mean(test$rings) - mean(train$rings) )^2 ) )
+baseline <- sqrt( mean( ( test$rings - mean(train$rings) )^2 ) )
 baseline
+
+
+p1 <- predict( Model1, newdata = test ) # make prediction with Model1 on test data
+p2 <- predict( Model2, newdata = test ) # make prediction with Model2 on test data
+p3 <- predict( Model3, newdata = test ) # make prediction with Model3 on test data
+
+
+rmse1 <- sqrt( mean( ( test$rings - p1 )^2 ) )
+rmse2 <- sqrt( mean( ( test$rings - p2 )^2 ) )
+rmse3 <- sqrt( mean( ( test$rings - p3 )^2 ) )
+rmse1
+rmse2
+rmse3
+
+
+
+boston <- read.csv( 'Boston.csv' )
+View( boston )
+
+# dependent variable is MEDV
+cor( boston[ -c(4) ] )
+library( ggplot2 )
+qplot( log(DIS), MEDV, data = boston )
+qplot( log(CRIM), MEDV, data = boston ) # not informative enough
+qplot( ZN, MEDV, data = boston ) # nothing
+qplot( INDUS, MEDV, data = boston ) # shit
+qplot( NOX, MEDV, data = boston ) # shit
+qplot( RM, MEDV, data = boston ) # wonderful y = kx
+qplot( AGE, MEDV, data = boston ) # shit
+qplot( sqrt(DIS), MEDV, data = boston ) # not so informative
+qplot( RAD, MEDV, data = boston ) # shit
+qplot( TAX, MEDV, data = boston ) # shit
+qplot( PTRATIO, MEDV, data = boston ) # shit
+qplot( B, MEDV, data = boston ) # shit
+qplot( LSTAT^(1/2), MEDV, data = boston )
+qplot( LSTAT, RM^2, data = boston )
+
+cor( (boston$LSTAT)^(1/2), boston$MEDV )
+cor( 1/(boston$LSTAT), boston$MEDV )
+cor( 1/(boston$LSTAT)^(1/4), boston$MEDV )
+cor( 1/log(boston$LSTAT), boston$MEDV )
+cor( log(boston$LSTAT), sqrt(boston$MEDV) )
+
+qplot( log(boston$LSTAT), sqrt(boston$MEDV) )
+qplot( 1/(boston$LSTAT)^(1/4), sqrt(boston$MEDV) )
+
+boston$LSTAT <- 1/(boston$LSTAT)^(1/4)
+set.seed( 1997 )
+sub <- sample( nrow( boston ), floor( nrow( boston ) * 0.7 ) ) # geenrate nrow( abalone )*0.7 integers that rage from 1 to nrow( abalone )
+
+train <- boston[ sub,]   # use the generated rows as a train data i.e 70% of the whole data
+test <- boston[ -sub, ]  # use the rest of the data as a test
+
+# build a model
+bostonModel <- lm( MEDV ~ LSTAT + RM, data = train )          # linear model that takes into account sex, weight.w
+predictions <- predict( bostonModel, newdata = test )
+sqrt( mean( ( test$MEDV - predictions )^2 ) )
