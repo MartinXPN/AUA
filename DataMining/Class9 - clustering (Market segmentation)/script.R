@@ -26,6 +26,4 @@ names( clusters )
 clusters <- kmeans( market, 3 )  # take all variables
 clusters$size                    # 8 16 16
 names( clusters )
-
-
 rm( list = ls() )
