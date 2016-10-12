@@ -12,3 +12,31 @@ table( titanic$survived, titanic$sex )
 161 / ( 161 + 682 ) # probability of males to be survived
 339 / ( 339 + 127 ) # probability of females to be survived
 
+
+# Positive / Negative outcomes
+# TruePositive                  FalsePositive
+# FalseNegative                 TrueNegative
+
+# True = model predicted correctly
+# False = model failed
+# Negative = answer was negative
+# Positive = answer was positive
+
+
+# Accuracy = ( TruePositive + TrueNegative ) / ALL
+# Sensitivity = TruePositive / ( TruePositive + TrueNegative )  => P(TruePositive | Positive)
+# Specificity = TrueNegative / ( TruePositive + TrueNegative )  => P(TrueNegative | Positive)
+
+
+
+library( 'caret' )
+set.seed( 1982 )
+sub <- createDataPartition( titanic$survived, p = 0.75, list = FALSE ) # survived is dependent variable
+train <- titanic[ sub, ]                                               # create train set
+test <- titanic[ -sub, ]                                               # create test set
+
+
+# create logistic regression model
+model <- glm( survived~sex+pclass+age+sibsp+parch, data = train, family = 'binomial' )
+summary( model )
+predictions <- predict( )
