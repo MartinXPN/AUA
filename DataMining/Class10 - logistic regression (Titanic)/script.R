@@ -1,5 +1,6 @@
 # Logistic regression
 titanic <- read.csv( 'Titanic_imputed.csv' )
+titanic$survived <- factor( titanic$survived, levels = c(0,1), labels = c('No', 'Yes') )
 model <- glm( survived~sex, data = titanic, family = 'binomial' )  # logistic regression model for variable survived
 
 
@@ -34,9 +35,25 @@ set.seed( 1982 )
 sub <- createDataPartition( titanic$survived, p = 0.75, list = FALSE ) # survived is dependent variable
 train <- titanic[ sub, ]                                               # create train set
 test <- titanic[ -sub, ]                                               # create test set
+rm( sub )
 
 
 # create logistic regression model
 model <- glm( survived~sex+pclass+age+sibsp+parch, data = train, family = 'binomial' )
 summary( model )
-predictions <- predict( )
+
+# remove parch from the model as it's not that significant
+model <- glm( survived~sex+pclass+age+sibsp, data = train, family = 'binomial' )
+summary( model )
+
+predictions <- predict( model, newdata = test, type = 'response' )
+summary( predictions )
+
+table( predictions > 0.5, test$survived ) # confusion matrix
+pr_label <- ifelse( predictions > 0.5, 'Yes', 'No' )
+confusionMatrix( pr_label, test$survived, positive = 'Yes' ) # get all parameters -> sensitivity, specificity, accuracy...
+
+library( 'ROCR')
+ptest <- prediction( predictions, test$survived )
+perform <- performance( ptest, 'tpr', 'fpr' )
+plot( perform )
