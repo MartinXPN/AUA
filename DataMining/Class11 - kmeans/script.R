@@ -1,4 +1,6 @@
 # Small example
+
+#shitty code. even my son can write better. See me after the class. - Madoyan
 data <- read.csv( 'KNN small example.csv' )
 
 # Make dependent variable factor (Yes/No) instead of (1/0)
@@ -11,7 +13,7 @@ qplot( data$Age, data$Loan, colour = data$Default ) # plot the data as scatter
 
 new_case <- c( 30, 130000, NA ) # create a new variable that will be inserted to the data
 data <- rbind( data, new_case ) # bind variable to the data frame
-
+rm( list = ls() )
 
 
 #Diabets
@@ -32,15 +34,17 @@ model <- knn( train[,-9], test[,-9], train$class, k = 8 )
 confusionMatrix( model, test$class, positive = 'Yes' )
 
 
+
+
 library( ggplot2 )
 diabets <- read.csv( 'Diabetes.csv' )
-training <- trainControl( "repeatedcv", number = 10, repeats = 3 )
+control <- trainControl( "repeatedcv", number = 10, repeats = 3 )
 diabets$Class <- factor( diabets$Class, levels = c( 0, 1 ), labels = c( 'No', 'Yes' ) )
 
 knn <- train( Class~., 
               data = diabets, 
-              trcontrol = training, 
+              trcontrol = control, 
               preProcess = c( 'center', 'scale' ), 
               method = 'knn', 
-              tuneLength = 5 )
+              tuneLength = 20 )
 plot( knn )
