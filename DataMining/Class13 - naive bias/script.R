@@ -49,3 +49,44 @@ perform <- performance( res, 'tpr', 'fpr' )
 plot( perform )
 
 performance( res, 'auc' )@y.values # 0.8857832
+
+
+
+#Cancer
+rm( list = ls() )
+cancer <- read.csv( 'cancer_train.csv' )
+cancer$Class <- factor( cancer$Class, levels = c( 0, 1 ), labels = c( 'No', 'Yes' ) )
+library( caret )
+set.seed( 2016 )
+sub <- createDataPartition( cancer$Class, p = 0.8, list = FALSE )
+train <- cancer[ sub, ]
+test <- cancer[ -sub, ]
+rm( sub )
+
+
+library( e1071 )
+model <- naiveBayes( Class~., data = train, laplace = 1 )
+names( model )
+
+predictions <- predict( model, newdata = test )                            # predict class labels
+prediction_probabilities <- predict( model, newdata = test, type = 'raw' ) # get probabilities of predictions
+confusionMatrix( predictions, test$Class, positive = 'Yes' ) # 0.7623 accuracy
+
+
+library( ROCR )
+res <- prediction( prediction_probabilities[,1], test$Class, label.ordering = c( 'Yes', 'No' ) )
+perform <- performance( res, 'tpr', 'fpr' )
+plot( perform, colorize = TRUE )
+
+performance( res, 'auc' )@y.values # 0.8434524
+
+
+
+# Create logistic regression model
+logistic_model <- glm( Class~., family = 'binomial', data = train )
+logistic_predictions <- predict( logistic_model, newdata = test, type = 'response' )
+pr_label <- ifelse( logistic_predictions > 0.5, 'Yes', 'No' )
+ptest <- prediction( logistic_predictions, test$Class )
+logistic_perform <- performance( ptest, 'tpr', 'fpr' )
+plot( perform )
+
