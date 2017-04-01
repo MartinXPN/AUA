@@ -2,6 +2,7 @@
 s1:			.word 10
 s2:			.word 11
 new_line: 	.asciiz "\n"
+hello:		.asciiz "hello"
 
 	.text
 	.globl main
@@ -48,24 +49,31 @@ here: 						# Infinite loop
 							# print is NOT a good practice, actually!
 	syscall
 
-	
+
+	# SIZE MANIPULATION
+	li $t4, 8							# $t4 = backspace code  	backspace = 8
+	li $t5, 10							# $t5 = enter code 			enter = 10
+	beq $a0, $t4, decrement_counter		# if( backspace )	decrement()
+	# bne $a0, $t4, increment_counter		# else				increment()
+
+	# BUFFER SIZE MANIPULATION
+	increment_counter:	
+		addi $s1, 1
+		j continuation
+	decrement_counter:
+		bgtz $s1, decrement_number
+		j continuation
+		decrement_number:
+			addiu $s1, -1
+	continuation:
+		li $v0,4				# print the new line
+		la $a0, new_line
+		syscall
+
 	# Print current size of buffer ($s1)
 	ori     $2, $0, 1			
 	or     	$a0, $0, $s1
 	syscall
-
-
-	# SIZE MANIPULATION
-	addi $s1, 1
-	#li $t4, 8							# $t4 = backspace code  	backspace = 8
-	#li $t5, 10							# $t5 = enter code 			enter = 10
-	#beq $a0, $t4, increment_counter		# if( backspace )	decrement()
-	#bne $a0, $t4, decrement_counter		# else				increment()
-
-
-	#li $v0,4				# print the new line
-	#la $a0, new_line
-	#syscall
 
 kdone:
 	mtc0 $0, $13			# Clear Cause register
