@@ -1,8 +1,11 @@
 	.kdata					# kernel data
-s1:			.word 10
-s2:			.word 11
-new_line: 	.asciiz "\n"
-hello:		.asciiz "hello"
+s1:				.word 10
+s2:				.word 11
+prompt: 		.asciiz "Input float: "		# Prompt for user to input a floating point number
+buffer_size:	.asciiz "\nBuffer size: "	# Prompt for buffer size
+new_line: 		.asciiz "\n\n"				# Utility to print a new line
+float_buffer:	.space 1000					# Reserve 1000 bytes for float input
+
 
 	.text
 	.globl main
@@ -17,6 +20,10 @@ main:						# Enable interrupts in main and jump to infinite loop of here:
 
 	li $s1, 0    			# $s1 is the counter of the buffer (how many characters we've read already)
 							# set $s1 to 0
+
+	li $v0,4				# print a string
+	la $a0, prompt 			# Prompt user to enter a float
+	syscall
 
 
 here: 						# Infinite loop
@@ -45,16 +52,15 @@ here: 						# Infinite loop
 	lui $v0, 0xFFFF			# $t0 = 0xFFFF0000;
 	lw $a0, 4($v0)			# get the input key
 	li $v0,11				# print it here. (11 for character, 1 for int-code)
-							# Note: interrupt routine should return very fast, so doing something like 
-							# print is NOT a good practice, actually!
 	syscall
 
 
-	# SIZE MANIPULATION
+	# Size Manipulation
 	li $t4, 8							# $t4 = backspace code  	backspace = 8
 	li $t5, 10							# $t5 = enter code 			enter = 10
+	beq $a0, $t5, exit					# close the program when cliking enter
 	beq $a0, $t4, decrement_counter		# if( backspace )	decrement()
-	# bne $a0, $t4, increment_counter		# else				increment()
+										# else				increment()
 
 	# BUFFER SIZE MANIPULATION
 	increment_counter:	
@@ -66,13 +72,21 @@ here: 						# Infinite loop
 		decrement_number:
 			addiu $s1, -1
 	continuation:
-		li $v0,4				# print the new line
-		la $a0, new_line
-		syscall
 
 	# Print current size of buffer ($s1)
-	ori     $2, $0, 1			
+	# Print prompt for buffer size
+	li $v0,4
+	la $a0, buffer_size
+	syscall
+
+	# Print buffer size
+	ori     $2, $0, 1
 	or     	$a0, $0, $s1
+	syscall
+
+	# Print new line after all
+	li $v0,4
+	la $a0, new_line
 	syscall
 
 kdone:
@@ -91,3 +105,6 @@ kdone:
 
 	eret					# return to EPC
 
+exit:
+    li      $v0, 10         # terminate program run and
+    syscall                 # Exit 
