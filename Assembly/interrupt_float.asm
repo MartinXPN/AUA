@@ -2,9 +2,10 @@
 s1:				.word 10
 s2:				.word 11
 prompt: 		.asciiz "Input float: "		# Prompt for user to input a floating point number
+buffer_title:	.asciiz "\nBuffer: "		# Prompt for printing the buffer
 buffer_size:	.asciiz "\nBuffer size: "	# Prompt for buffer size
 new_line: 		.asciiz "\n\n"				# Utility to print a new line
-float_buffer:	.space 1000					# Reserve 1000 bytes for float input
+float_buffer:	.space 100					# Reserve 100 bytes for float input
 
 
 	.text
@@ -20,6 +21,9 @@ main:						# Enable interrupts in main and jump to infinite loop of here:
 
 	li $s1, 0    			# $s1 is the counter of the buffer (how many characters we've read already)
 							# set $s1 to 0
+
+	la $s2, float_buffer	# Pointer to the first element of the buffer
+	la $s3, float_buffer	# $s3 is the current element where the modifications need to be done
 
 	li $v0,4				# print a string
 	la $a0, prompt 			# Prompt user to enter a float
@@ -64,14 +68,18 @@ here: 						# Infinite loop
 
 	# BUFFER SIZE MANIPULATION
 	increment_counter:	
-		addi $s1, 1
-		j continuation
+		sb	$a0, 0($s3)		# Store the value of input into #s3
+		addi $s1, 1			# Increment the counter $s1
+		addi $s3, 1			# Move to the next cell
+		j continuation		# Jump to continuation, don't decrement the counter
 	decrement_counter:
-		bgtz $s1, decrement_number
-		j continuation
+		bgtz $s1, decrement_number		# Decrement only when $s1 > 0
+		j continuation					# Otherwise jump to continuation
 		decrement_number:
-			addiu $s1, -1
+			addi $s1, -1		# Decrement the counter ($s1) by 1
+			addi $s3, -1		# Move to the previous cell
 	continuation:
+		jal print_buffer		# Print current buffer
 
 	# Print current size of buffer ($s1)
 	# Print prompt for buffer size
@@ -83,11 +91,8 @@ here: 						# Infinite loop
 	ori     $2, $0, 1
 	or     	$a0, $0, $s1
 	syscall
-
-	# Print new line after all
-	li $v0,4
-	la $a0, new_line
-	syscall
+	# Print new line in the end
+	jal print_new_line
 
 kdone:
 	mtc0 $0, $13			# Clear Cause register
@@ -107,4 +112,32 @@ kdone:
 
 exit:
     li      $v0, 10         # terminate program run and
-    syscall                 # Exit 
+    syscall                 # Exit
+
+
+# Print buffer of user input
+print_buffer:
+	li $t4, 0				# Counter for the loop
+	move $t0, $s2			# keep pointer to the first element of the buffer
+
+	li $v0, 4				# Prepare to print string
+	la $a0, buffer_title	# Print Title for buffer
+	syscall					# Trigger a system call
+
+	loop:
+		beq 	$s1, $t4, end		# Break if $t4 reached the size of the buffer
+		lb    	$a0, 0($t0)      	# load byte into $a0
+		li    	$v0, 11            	# print the character
+		syscall                   	# issue a system call
+		addi 	$t0, 1				# Move to the next cell
+		addi 	$t4, 1				# Add 1 to index ($t4)
+		j loop
+	end:
+		jr $ra # return
+
+
+print_new_line:
+	li $v0, 4
+	la $a0, new_line
+	syscall
+	jr $ra
