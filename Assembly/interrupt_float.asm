@@ -2,9 +2,8 @@
 s1:		.word 10
 s2:		.word 11
 prompt: 	.asciiz "Input float: "		# Prompt for user to input a floating point number
-buffer_title:	.asciiz "\nBuffer: "		# Prompt for printing the buffer
-buffer_size:	.asciiz "\nBuffer size: "	# Prompt for buffer size
-new_line: 	.asciiz "\n\n"			# Utility to print a new line
+bad_float:	.asciiz "\nInvalid float!\n"
+new_line: 	.asciiz "\n"
 float_buffer:	.space 100			# Reserve 100 bytes for float input
 
 
@@ -62,7 +61,7 @@ here: 			# Infinite loop
 	# Size Manipulation
 	li $t4, 8				# $t4 = backspace code 	(8)
 	li $t5, 10				# $t5 = enter code 	(10)
-	beq $a0, $t5, exit			# close the program when cliking enter
+	beq $a0, $t5, check_float		# close the program when cliking enter
 	beq $a0, $t4, decrement_counter		# if( backspace )	decrement()
 						# else			increment()
 
@@ -81,18 +80,7 @@ here: 			# Infinite loop
 	continuation:
 		jal print_buffer		# Print current buffer
 
-	# Print current size of buffer ($s1)
-	# Print prompt for buffer size
-	li $v0,4
-	la $a0, buffer_size
-	syscall
 
-	# Print buffer size
-	ori     $2, $0, 1
-	or     	$a0, $0, $s1
-	syscall
-	# Print new line in the end
-	jal print_new_line
 
 kdone:
 	mtc0 $0, $13		# Clear Cause register
@@ -110,6 +98,40 @@ kdone:
 
 	eret			# return to EPC
 
+
+# Check if the float is valid or not
+check_float:
+	li $t3, 46		# $t3 = '.'
+	li $t4, -1		# Counter for the loop
+	move $t0, $s2		# keep pointer to the first element of the buffer
+	addi $t0, -1
+	li $t2, 0		# Number of dots found so far
+
+	lp:
+		addi 	$t0, 1		# Move to the next cell
+		addi 	$t4, 1		# Add 1 to index ($t4)
+		beq 	$s1, $t4, parse_float	# Break if $t4 reached the size of the buffer
+		lb    	$a0, 0($t0)     	# load byte into $a0
+		beq	$a0, $t3, found_dot	# continue the loop if current digit is '.'
+		addi	$t1, $a0, -48		# Check char < '0'
+		bltz	$t1, bad_string
+		addi	$t1, $a0, -57		# Check char > '9'
+		bgtz	$t1, bad_string
+		j lp				# continue the loop
+		found_dot:
+			bgtz $t2, bad_string	# If this dot is not the first one then the string is invalid
+			addi $t2, 1		# Add one to counter
+			j lp
+	bad_string:
+		li $v0, 4
+		la $a0, bad_float
+		syscall
+		j exit
+
+parse_float:
+	j exit
+
+
 exit:
     li      $v0, 10         # terminate program run and
     syscall                 # Exit
@@ -121,8 +143,13 @@ print_buffer:
 	move $t0, $s2		# keep pointer to the first element of the buffer
 
 	li $v0, 4		# Prepare to print string
-	la $a0, buffer_title	# Print Title for buffer
+	la $a0, new_line	# Print Title for buffer
 	syscall			# Trigger a system call
+
+	li $v0, 4		# Prepare to print string
+	la $a0, prompt		# Print Title for buffer
+	syscall			# Trigger a system call
+
 
 	loop:
 		beq 	$s1, $t4, end	# Break if $t4 reached the size of the buffer
