@@ -159,6 +159,7 @@ parse_float:
 	li $t4, 0		# Counter for the loop
 	move $t0, $s2		# keep pointer to the first element of the buffer
 
+	
 	parse_decimal_loop:
 		beq 	$s1, $t4, print_result		# Break if $t4 reached the size of the buffer
 		lb    	$t1, 0($t0)     		# load byte into $t1
@@ -166,15 +167,29 @@ parse_float:
 		addi	$t1, -48			# Get value of the character
 		
 		mtc1 	$t1, $f12		# move to c1 value stored in t1
- 		cvt.s.w $f6, $f12		# Convert to float
+ 		cvt.s.w $f6, $f12		# Convert to float and keep in $f6
 
 		mul.s 	$f1, $f1, $f3		# res *= 10
 		add.s 	$f1, $f1, $f6 		# res += buffer[$t4]
 		addi 	$t0, 1			# Move to the next cell
 		addi 	$t4, 1			# Add 1 to index ($t4)
 		j parse_decimal_loop
+	
+
 	parse_floating_loop:
-		j print_result
+		addi 	$t0, 1			# Move to the next cell
+		addi 	$t4, 1			# Add 1 to index ($t4)
+		beq 	$s1, $t4, print_result	# Break if $t4 reached the size of the buffer
+		lb    	$t1, 0($t0)     	# load byte into $t1
+		addi	$t1, -48		# Get value of the character
+
+		mtc1 	$t1, $f12		# move to c1 value stored in t1
+ 		cvt.s.w $f6, $f12		# Convert to float and keep in $f6
+
+ 		mul.s 	$f6, $f6, $f4		# s[i] * exp
+ 		mul.s 	$f4, $f4, $f2 		# exp *= 0.1	($f4 *= 0.1)
+ 		add.s 	$f1, $f1, $f6		# res += $f6
+		j parse_floating_loop
 
 
 
