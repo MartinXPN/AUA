@@ -24,7 +24,7 @@ colnames(mat) <- c('A', 'B', 'C', 'D', 'E')
 net = network(mat, matrix.type='adjacency')
 summary(net)
 
-plot(net, 
+plot(net,
      main='My Awesome Network',       # Name of the network
      label=network.vertex.names(net), # Labels of nodes
      vertex.cex=3,                    # Vertex size
@@ -52,3 +52,24 @@ plot(net2)
 # Plot graph using sna package
 sna::gplot( net, displaylabels = T )
 
+network::set.vertex.attribute(net1, 'gender', c("F", "F", "M", "F", "M"))
+summary(net1)
+
+network::set.edge.attribute(net1, 'edge.size', c(3, 0, 5, 2, 1))
+network::get.edge.attribute(net1, 'edge.size')
+network::list.vertex.attributes(net1)
+
+
+set.seed(777) # Run this with plot and the result will be the same every time, the graph won't be rotated
+coordinates = plot(net1,                                   # Plot net1
+     label=network::get.vertex.attribute(net1, 'gender'),  # label = gender
+     vertex.col='gender',                                  # set different colors for different genders
+     vertex.cex=3,
+     edge.label='edge.size',                               # Draw values on edges
+     edge.lwd='edge.size')                                 # Edges with high values are thicker
+
+View(coordinates)
+plot(net1, 
+     mode='circle',         # Plot graph s.t nodes form a circle with equal distance from each other
+     suppress.axes=F)       # Plot axes
+# With iGraph object we need to specify layout=coordinates instead of mode
