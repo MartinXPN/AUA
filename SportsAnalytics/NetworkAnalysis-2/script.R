@@ -44,9 +44,6 @@ plot(net,
      layout=igraph::layout.circle,                        # Organize everything in circle
      edge.width=as.matrix(wc_14_final$germany_passing)/3) # Thickness of edge
 
-plot.default(wc_14_final$argentina_team$Pass_attempted, xlab = wc_14_final$argentina_team$Player_name)
-wc_14_final$argentina_team$Player_name
-wc_14_final$argentina_team$Pass_attempted - wc_14_final$argentina_team$Pass_completed
 
 # load the file arg_edgelist, this is the edgelist representation of the 
 # passing network for Argentina.
@@ -69,6 +66,12 @@ wc_14_final$argentina_team$Pass_attempted - wc_14_final$argentina_team$Pass_comp
 # Install package "circlise" with install.packages, if it is not installed
 # look at the function chordDiagram, it takes as an input sociomatrix
 # use as.matrix if needed
+library(circlize)
+data <- as.matrix(net)
+colnames(data) <- wc_14_final$argentina_team$Player_name
+rownames(data)<- wc_14_final$argentina_team$Player_name
+
+circlize::chordDiagram(data)
 
 # can figure out how to use heatmap from R basic package works and what it does?
 # Try on our dataset
@@ -78,4 +81,34 @@ wc_14_final$argentina_team$Pass_attempted - wc_14_final$argentina_team$Pass_comp
 # can you alter the coordinates of the graph in a way, to replicate the positions of the players on the graph?
 # you can use first 11 entries in the sociomatrix, as those were in the starting lineup
 # do it for each team, with horizontal layout.
+net <- igraph::graph.adjacency(as.matrix(wc_14_final$germany_passing),
+                               mode="directed",
+                               weighted=TRUE,
+                               diag=FALSE)
+
+wc_14_final$germany_team$Position
+position <- factor(wc_14_final$germany_team$Position, 
+                   levels = c('DF', 'FW', 'GK', 'MF'),
+                   labels = c(1, 3, 0, 2))
+
+position <- as.vector(position)
+position <- as.integer(position)
+count = position
+count[2] = 1
+for(i in 2:length(position)) {
+  count[i] = 1
+  for(j in 1:(i-1) ){
+    if( position[i] == position[j]) {
+      count[i] = count[i] + 1;
+    }
+  }
+}
+
+res = cbind(count, position)
+plot(net,
+     #label=wc_14_final$argentina_team$Shirt_number,
+     vertex.label=wc_14_final$germany_team$Player_name,   # Print player names on nodes
+     edge.arrow.size=0.1,                                 # Arrow size
+     layout=res,                                          # Organize everything in circle
+     edge.width=as.matrix(wc_14_final$germany_passing)/3) # Thickness of edge
 
