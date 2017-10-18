@@ -33,3 +33,23 @@ network.density(net)
 # edges / (nodes * (nodes-1))
 density = network.edgecount(net) / ( network.size(net) * (network.size(net)-1) )
 density
+
+# Get degree of vertices
+degree(net)                    # out + in degree
+degree(net, cmode='outdegree') # outgoing degree
+degree(net, cmode='indegree')  # ingoing degree
+
+
+# Calculate closeness for every vertex in the graph
+1 / sna::closeness(net, gmode='graph')                # Calculate with sna
+net <- asIgraph(net)                                  # Convert to igraph
+1 / igraph::closeness(net, mode='all', normalized=T)  # Calculate with igraph
+
+# Calculate closeness for weighted graph
+net <- asNetwork(net)
+network::set.edge.attribute(net, 'weight', c(30, 10, 5, 2, 6))
+1 / igraph::closeness(asIgraph(net), normalized = T)
+
+
+# Calculate number of occurences of each vertex in all possible shortest paths
+igraph::betweenness(asIgraph(net))
