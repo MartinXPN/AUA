@@ -15,7 +15,7 @@ rownames(mat) <- c('A', 'B', 'C', 'D', 'E')
 colnames(mat) <- c('A', 'B', 'C', 'D', 'E')
 
 
-net = network(mat, matrix.type='adjacency')
+ork(mat, matrix.type='adjacency')
 summary(net)
 
 plot(net,
