@@ -1,5 +1,10 @@
+# R and RStudio files
 .Rproj.user
 .Rhistory
 .RData
 .DS_Store
 .Ruserdata
+
+# Python and ipython notebook files
+.ipynb_checkpoints
+.pyc
