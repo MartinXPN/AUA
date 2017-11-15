@@ -8,3 +8,6 @@
 # Python and ipython notebook files
 .ipynb_checkpoints
 .pyc
+
+# Ignore BSDS500 images for edge detection
+BSDS500/
